@@ -17,5 +17,6 @@ logs/
 
 # IDE 或编辑器临时文件
 .idea/
+.vscode/       # ← 新增这一行
 *.swp
 *.swo
