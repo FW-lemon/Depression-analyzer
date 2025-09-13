@@ -1,4 +1,5 @@
 import pandas as pd
+from utils.logger import logger
 import os
 
 # List of year directories containing .xpt files
@@ -30,8 +31,8 @@ for year in year_dirs:
                     
                     # Delete the original .xpt file
                     os.remove(filepath)
-                    print(f"Converted and deleted: {filepath}")
+                    logger.info(f"Converted and deleted: {filepath}")
                 except Exception as e:
-                    print(f"Error processing {filepath}: {e}")
+                    logger.error(f"Error processing {filepath}: {e}")
     else:
-        print(f"Directory not found: {dir_path}")
+        logger.info(f"Directory not found: {dir_path}")
