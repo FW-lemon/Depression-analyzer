@@ -5,8 +5,12 @@ import os
 
 def process_year_folder(input_dir, threshold_ratio=0.7):
     """
-    清洗并合并一个年份文件夹下的所有 *_clean.csv 文件，保留数值特征，填补缺失值。
-    最终保存为 {年份}_total.csv
+    清洗并合并一个年份文件夹下的所有 *_clean.csv 文件：
+    - 删除列名里包含 'missing' 的列
+    - 只保留数值列
+    - 删除没有达到 threshold_ratio 的 SEQN
+    - 填补空值为 0
+    - 输出文件命名为 {年份}_total.csv
     """
     files = glob.glob(f"{input_dir}/*_clean.csv")
     if not files:
@@ -43,12 +47,12 @@ def process_year_folder(input_dir, threshold_ratio=0.7):
     merged = reduce(lambda left, right: pd.merge(left, right, on="SEQN", how="outer"), filtered_dfs)
     print(f"最终合并后的形状: {merged.shape}")
 
-    # 只保留数值列
-    numeric_cols = merged.select_dtypes(include=["number"]).columns.tolist()
+    # 只保留数值列，并排除包含 'missing' 的列
+    numeric_cols = [c for c in merged.select_dtypes(include=["number"]).columns if "missing" not in c.lower()]
     numeric_df = merged[numeric_cols]
 
-    # 填补缺失值
-    filled_df = numeric_df.fillna(numeric_df.median())
+    # 填补空值为 0
+    filled_df = numeric_df.fillna(0)
 
     # 保存最终结果
     year_prefix = input_dir.split("-")[0]  # 文件夹名开头年份
