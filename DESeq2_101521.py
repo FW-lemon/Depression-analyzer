@@ -108,65 +108,135 @@ plt.savefig(f'{OUTPUT_DIR}/volcano.png', dpi=400)
 plt.close()
 print("火山图保存成功")
 
-# ====================== 热图 - 修复版 ======================
 # ====================== 热图部分 - 最终适配你的版本 ======================
-print("\n生成热图...")
+# ====================== 最终版 DEG Heatmap（论文终稿级） ======================
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from matplotlib.colors import to_rgba
+
+print("\n生成 DEG 表达量热图（Z-score，终稿版）...")
 
 if len(degs_strict) > 0:
-    top_genes = degs_strict.sort_values('padj').head(50).index.tolist()
-    
-    # 你的版本中 normed_counts 已经是 samples x genes (59 x 39376)
-    norm_matrix = dds.layers['normed_counts']
-    print(f"norm_matrix 形状: {norm_matrix.shape}")  # 确认 (59, 39376)
-    
-    norm_df = pd.DataFrame(
-        norm_matrix,                           # 直接用，不转置！
-        index=dds.obs_names,                   # 59 个样本名作为行
-        columns=dds.var_names                  # 39376 个基因作为列
+    # ===== 1. 选 top 50 DEGs（padj 最小优先）=====
+    top_df = degs_strict.sort_values('padj').head(50)
+
+    # 上调在上，下调在下（非常关键的“论文感”）
+    top_df = pd.concat([
+        top_df[top_df['log2FoldChange'] > 0].sort_values('log2FoldChange', ascending=False),
+        top_df[top_df['log2FoldChange'] < 0].sort_values('log2FoldChange')
+    ])
+
+    top_genes = top_df.index.tolist()
+
+    # ===== 2. 取标准化表达量 =====
+    expr_matrix = dds.layers['normed_counts']
+    expr_df = pd.DataFrame(
+        expr_matrix,
+        index=dds.obs_names,
+        columns=dds.var_names
     )
-    
-    plot_df = norm_df[top_genes]               # (59 samples, 50 genes)
-    print(f"plot_df 形状: {plot_df.shape}")    # 调试确认
-    
-    # Z-score 标准化（axis=0，按基因列标准化）
-    plot_z = pd.DataFrame(
-        zscore(plot_df, axis=0),
-        index=plot_df.index,
-        columns=plot_df.columns
-    )
-    
-    # 样本颜色条
-    group_colors = metadata['condition'].map({'control': '#1f77b4', 'MDD': '#ff7f0e'})
-    
-    g = sns.clustermap(
+
+    # genes × samples
+    plot_df = expr_df[top_genes].T
+
+    # ===== 3. gene-wise Z-score =====
+    plot_z = plot_df.sub(plot_df.mean(axis=1), axis=0) \
+                    .div(plot_df.std(axis=1), axis=0)
+
+    # ===== 4. 分组信息 =====
+    n_control = 29
+    n_mdd = 30
+    sample_names = plot_z.columns.tolist()
+
+    # ===== 5. 作图（竖向拉长）=====
+    fig = plt.figure(figsize=(18, 16))
+    ax = fig.add_axes([0.06, 0.08, 0.76, 0.82])
+
+    hm = sns.heatmap(
         plot_z,
         cmap='RdBu_r',
         center=0,
-        row_cluster=True,
-        col_cluster=True,
-        row_colors=group_colors,
-        figsize=(11, 13),
-        xticklabels=True,
-        yticklabels=False,
-        cbar_kws={'label': 'Z-score'},
-        dendrogram_ratio=0.08,
-        colors_ratio=0.015
+        vmin=-2,
+        vmax=2,
+        xticklabels=False,
+        yticklabels=True,
+        linewidths=0,
+        cbar=False,
+        ax=ax
     )
-    
-    g.ax_heatmap.set_title('Heatmap - Top 50 DEGs (by padj)\nMDD vs Control', fontsize=14, pad=20)
-    g.ax_heatmap.set_xlabel('Genes', fontsize=12)
-    g.ax_heatmap.set_ylabel('Samples', fontsize=12)
-    
-    from matplotlib.patches import Patch
+
+    ax.set_ylabel('Top 50 DEGs', fontsize=13)
+    ax.set_xlabel('Samples', fontsize=13)
+
+    # ===== 6. 组间分割线 =====
+    ax.axvline(x=n_control, color='black', linewidth=2.8)
+
+    # ===== 7. 顶部分组颜色条 =====
+    group_colors = ['#4C72B0'] * n_control + ['#DD8452'] * n_mdd
+    color_array = np.array([to_rgba(c) for c in group_colors])[None, :, :]
+
+    ax_bar = fig.add_axes([0.06, 0.91, 0.76, 0.025])
+    ax_bar.imshow(color_array, aspect='auto')
+    ax_bar.set_xticks([])
+    ax_bar.set_yticks([])
+
+    # 顶部左右组名（非常关键）
+    ax_bar.text(
+        n_control / 2,
+        -0.6,
+        'Control',
+        ha='center',
+        va='bottom',
+        fontsize=12,
+        fontweight='bold'
+    )
+    ax_bar.text(
+        n_control + n_mdd / 2,
+        -0.6,
+        'MDD',
+        ha='center',
+        va='bottom',
+        fontsize=12,
+        fontweight='bold'
+    )
+
+    # ===== 8. colorbar =====
+    cbar_ax = fig.add_axes([0.84, 0.18, 0.025, 0.60])
+    cbar = fig.colorbar(hm.collections[0], cax=cbar_ax)
+    cbar.set_label('Z-score (row-wise)', fontsize=12)
+    cbar.ax.tick_params(labelsize=10)
+
+    # ===== 9. 右上角 legend（靠近但不抢）=====
     legend_elements = [
-        Patch(facecolor='#1f77b4', label='Control'),
-        Patch(facecolor='#ff7f0e', label='MDD')
+        Patch(facecolor='#4C72B0', label=f'Control (n={n_control})'),
+        Patch(facecolor='#DD8452', label=f'MDD (n={n_mdd})')
     ]
-    g.ax_heatmap.legend(handles=legend_elements, bbox_to_anchor=(1.35, 1.05), loc='upper right')
-    
-    g.savefig(f'{OUTPUT_DIR}/heatmap_top50_strict.png', dpi=400, bbox_inches='tight')
-    plt.close(g.fig)
-    
-    print("热图已保存成功！")
+    ax.legend(
+        handles=legend_elements,
+        loc='upper left',
+        bbox_to_anchor=(1.08, 1.00),
+        frameon=False,
+        fontsize=12
+    )
+
+    # ===== 10. 总标题 =====
+    fig.suptitle(
+        'Heatmap of Differentially Expressed Genes\nZ-score normalized expression',
+        fontsize=15,
+        fontweight='bold',
+        y=0.985
+    )
+
+    # ===== 11. 保存 =====
+    output_path = f'{OUTPUT_DIR}/heatmap_top50_DEGs_expression_FINAL.png'
+    plt.savefig(output_path, dpi=600, bbox_inches='tight')
+    plt.close(fig)
+
+    print("✅ 最终版 DEG 热图已保存：", output_path)
+
 else:
-    print("无足够 DEGs")
+    print("没有足够的 DEGs 生成热图")
+
