@@ -12,7 +12,7 @@ out_dir = "ML-result"
 os.makedirs(out_dir, exist_ok=True)
 
 # ================== 2. 读取数据 ==================
-tpm_file = "data/GSE101521_TPM_39genes.tsv"
+tpm_file = "data/GSE101521_39genes.tsv"
 df = pd.read_csv(tpm_file, sep='\t', index_col=0)
 
 num_control = 29
