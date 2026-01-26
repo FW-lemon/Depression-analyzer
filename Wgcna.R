@@ -5,13 +5,13 @@ options(stringsAsFactors = FALSE)
 enableWGCNAThreads(nThreads = 27)  # 并行计算
 
 # ====================== 2. 输出目录 ======================
-OUT_DIR <- "WGCNA_results_top8000"
+OUT_DIR <- "WGCNA_results_top8001"
 dir.create(OUT_DIR, showWarnings = FALSE)
 
 # ====================== 3. 数据读取与预处理 ======================
 print("1. 读取表达矩阵...")
 raw_df <- read.table(
-  "/home/project/yihao/data/clean_59samples_symbol_unique.tsv",
+  "/home/project/yihao/data/GSE101521_TPM.tsv",
   header = TRUE, sep = "\t", check.names = FALSE
 )
 

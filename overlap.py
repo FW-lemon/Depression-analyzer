@@ -7,11 +7,12 @@ import os
 wgcna_file = 'WGCNA_results_top8000/Key_Module_green_Genes.csv'
 
 deg_files = {
-    'deg_GSE101521_loose': 'deg_GSE101521/DEGs_loose.csv',
-    'deg_GSE101521_strict': 'deg_GSE101521/DEGs_strict.csv',
-    'limma_GSE101521_loose': 'limma_GSE101521/DEGs_loose.csv',
-    'limma_GSE101521_strict': 'limma_GSE101521/DEGs_strict.csv'
+    'deseq2_GSE101521_loose': 'DEG_results/deseq2_results/DEGs_loose.csv',
+    'deseq2_GSE101521_strict': 'DEG_results/deseq2_results/DEGs_strict.csv',
+    'limma_GSE101521_loose': 'DEG_results/limma_results/DEGs_loose.csv',
+    'limma_GSE101521_strict': 'DEG_results/limma_results/DEGs_strict.csv'
 }
+
 
 # ====================== 输出文件夹 ======================
 output_dir = 'WGCNA_DEG_overlap_results'

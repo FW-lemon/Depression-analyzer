@@ -20,7 +20,7 @@ from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
 
 # ====================== 1. 配置 ======================
-INPUT_FILE = 'data/GSE101521_clean_59samples.tsv'
+INPUT_FILE = '/home/project/yihao/data/GSE101521.tsv'
 BASE_OUT   = 'DEG_results'
 LIMMA_OUT  = os.path.join(BASE_OUT, 'limma_results')
 DESEQ2_OUT = os.path.join(BASE_OUT, 'deseq2_results')

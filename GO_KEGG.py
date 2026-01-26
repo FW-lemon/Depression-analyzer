@@ -7,9 +7,9 @@ import os
 from matplotlib.gridspec import GridSpec
 
 # ================= 1. 配置区域 =================
-INPUT_FILE = "/home/project/yihao/WGCNA_DEG_overlap_results/overlap_WGCNA_deg_GSE101521_loose.csv"
+INPUT_FILE = "/home/project/yihao/WGCNA_DEG_overlap_results/overlap_WGCNA_deseq2_GSE101521_loose.csv"
 OUTPUT_DIR = "/home/project/yihao/GO_KEGG"
-COMBINED_FIGURE_NAME = "Final_Combined_Enrichment_Plot_v2.png"
+COMBINED_FIGURE_NAME = "Final_Combined_Enrichment_Plot.png"
 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
