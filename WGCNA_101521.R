@@ -5,7 +5,7 @@ options(stringsAsFactors = FALSE)
 enableWGCNAThreads(nThreads = 27)  # 并行计算
 
 # ====================== 2. 输出目录 ======================
-OUT_DIR <- "WGCNA_results_top8000"
+OUT_DIR <- "MDD_WGCNA_results"
 dir.create(OUT_DIR, showWarnings = FALSE)
 
 # ====================== 3. 数据读取与预处理 ======================
