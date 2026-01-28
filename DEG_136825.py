@@ -30,7 +30,7 @@ CASE_LAB = 'Sinusitis'
 CTRL_LAB = 'Control'
 
 # 阈值配置
-L_LFC, L_PADJ = 0.58, 0.10  # 松 (1.5倍)
+L_LFC, L_PADJ = 0.38, 0.10  # 松 (1.5倍)
 S_LFC, S_PADJ = 1.0, 0.05   # 严 (2倍)
 
 for d in [LIMMA_OUT, DESEQ2_OUT]:
