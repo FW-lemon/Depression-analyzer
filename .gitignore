@@ -10,13 +10,12 @@ venv/
 .pytest_cache/
 
 # 数据文件
-*.xpt
-*.csv
-data/
+# *.csv         <-- 注释掉或删掉这一行
+# data/         <-- 如果你的 TPM 文件在 data 文件夹里，也要注释掉这一行
 logs/
 
 # IDE 或编辑器临时文件
 .idea/
-.vscode/       # ← 新增这一行
+.vscode/
 *.swp
 *.swo
