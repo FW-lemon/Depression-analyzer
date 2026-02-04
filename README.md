@@ -1,4 +1,5 @@
 🧠 Depression-analyzer: MDD & Sinusitis Transcriptomic Analysis
+
 这是一个基于转录组数据的生物信息学分析 pipeline。该项目整合了 WGCNA (加权基因共表达网络分析)、DESeq2 差异表达分析 以及 多模型机器学习分类，旨在挖掘抑郁症 (MDD) 等疾病的关键生物标志物。
 
 🚀 核心流程

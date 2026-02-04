@@ -6,7 +6,7 @@ enableWGCNAThreads(nThreads = 27)
 
 # ====================== 2. 配置 (针对 GSE136825) ======================
 INPUT_FILE <- "/home/project/yihao/data/GSE136825.tsv"  # 请确认路径
-OUT_DIR <- "BDY_WGCNA_results"
+OUT_DIR <- "SINUSITIS_WGCNA_results"
 N_CASE <- 42    # Sinusitis
 N_CTRL <- 33    # Control
 dir.create(OUT_DIR, showWarnings = FALSE)

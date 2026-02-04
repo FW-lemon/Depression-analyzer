@@ -8,12 +8,15 @@ FILES = [
     "GSE101521.tsv",
     "GSE136825_TPM.tsv",
     "GSE136825.tsv",
+    "GSE179265_TPM.tsv",
+    "GSE179265.tsv",
 ]
 
 # 不同数据集保留的样本数
 KEEP_N = {
     "GSE101521": 59,
     "GSE136825": 75,
+    "GSE179265": 27
 }
 
 # 1. 读取 gene_table
